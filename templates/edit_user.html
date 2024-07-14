@@ -30,10 +30,10 @@
     
     <tr>
       <td>{{ users.id }}</td>
-      <td><a href="{{ url_for('update_user', id=id) }}"><strong>{{ users.name }}</strong></a> </td>
+      <td><a href="{{ url_for('user_date', id=our_users.id) }}"><strong>{{ users.name }}</strong></a> </td>
       <td>{{ users.username }}</td>
       <td>{{ users.email }}</td>
-      <td><a href="{{ url_for('update_user', id=id) }}">🗑️</a> </td>
+      <td><a href="{{ url_for('user_date', id=our_users.id) }}">🗑️</a></td>
     </tr>
   
     {% endfor %}

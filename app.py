@@ -77,6 +77,31 @@ def logout():
 @app.route('/dashboard', methods=["GET", "POST"])
 @login_required
 def dashboard():
+  form = UpdateUserForm()
+  id = current_user.id
+  user_to_update = Users.query.get_or_404(id)
+  if request.method == "POST":
+    user_to_update.name = request.form['name']
+    user_to_update.email = request.form['email']
+    user_to_update.username = request.form['username']
+    try:
+      db.session.commit()
+      flash('User Updated Successfully!')
+      return render_template("dashboard.html",
+        form=form,
+        user_to_update=user_to_update)
+    except:
+      flash('Error! Looks like there was a problem... Try Again!')
+      return render_template("dashboard.html",
+        form=form,
+        user_to_update=user_to_update,
+        id=id)
+  else:
+    return render_template("dashboard.html",
+        form=form,
+        user_to_update=user_to_update,
+        id=id)
+  
   return render_template('dashboard.html')
 
 
@@ -319,6 +344,7 @@ def add_post():
 
 # Edit Blog Page
 @app.route('/posts/edit/<int:id>', methods=['GET','POST'])
+@login_required
 def edit_post(id):
   post = Posts.query.get_or_404(id)
   form = PostForm()
@@ -344,6 +370,7 @@ def edit_post(id):
 
 # Delete Blog Page
 @app.route('/post/delete/<int:id>')
+@login_required
 def delete_post(id):
   post_to_delete = Posts.query.get_or_404(id)
   title = None
