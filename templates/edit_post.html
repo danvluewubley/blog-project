@@ -45,7 +45,7 @@
   </form>
 </div>
 
-<a href="{{ url_for('posts') }}" class="btn btn-outline-secondary btn-sm">Back To Blog</a>
-<a href="{{ url_for('delete_post') }}" class="btn btn-outline-secondary btn-sm">🗑️</a>
+<a href="{{ url_for('posts', id=current_user.id) }}" class="btn btn-outline-secondary btn-sm">Back To Blog</a>
+<a href="{{ url_for('delete_post', id=current_user.id) }}" class="btn btn-outline-secondary btn-sm">🗑️</a>
 
 {% endblock %}
