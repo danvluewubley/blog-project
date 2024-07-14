@@ -13,10 +13,25 @@
 
 {% endfor %}
 
-  <h1>Dashboard</h1>
-  <br/><br/><br/>
-  <p>You Are Logged In</p>
+  <h2>Dashboard</h2>
+  <br/>
 
-  <a href="{{ url_for('logout')}}" class="btn btn-secondary">Logout</a>
+  <div class="card">
+    <div class="card-header">
+      {{ current_user.name }}
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Welcome To Your User Dashboard...</h5>
+      <strong>Name:</strong> {{ current_user.name }}<br/>
+      <strong>Username:</strong> {{ current_user.username }} <br/>
+      <strong>User ID:</strong> {{ current_user.id }} <br/>
+      <strong>Email:</strong> {{ current_user.email }} <br/>
+      <strong>Date Joined:</strong> {{ current_user.date_added }} <br/><br/>
+      <a href="{{ url_for('logout')}}" class="btn btn-danger">Log Out</a>
+    </div>
+  </div>
+
+  <br/><br/>
+
 
 {% endblock %}

@@ -6,12 +6,21 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+      {% if current_user.is_authenticated %}
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('add_user') }}">Add Account</a>
+        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+      </li>
+      {% else %}
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('login') }}">Login</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_user') }}">Register</a>
+      </li>
+      {% endif %}
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('add_post') }}">Add Blog Post</a>
       </li>
