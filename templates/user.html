@@ -23,6 +23,7 @@
       <th>Name</th>
       <th>Username</th>
       <th>Email</th>
+      <th>About Author</th>
       <th>Password</th>
       <th>Delete</th>
     </tr>
@@ -33,6 +34,7 @@
       <td>{{ users.id }}</td>
       <td><a href="{{ url_for('user_update', id=users.id) }}"><strong>{{ users.name }}</strong></a> </td>
       <td>{{ users.username }}</td>
+      <td>{{ users.about_author }}</td>
       <td>{{ users.email }}</td>
       <td>{{ users.password_hash }}</td>
       <td><a href="{{ url_for('user_delete', id=users.id) }}"><strong>🗑️</strong></a> </td>
@@ -61,6 +63,11 @@
 
     {{ form.email.label(class="form-label") }}
     {{ form.email(class="form-control") }}
+
+    <br/>
+
+    {{ form.about_author.label(class="form-label") }}
+    <textarea name="about_author" class="form-control"></textarea>
     
     <br/>
 
@@ -86,6 +93,7 @@
     <th>Name</th>
     <th>Username</th>
     <th>Email</th>
+    <th>About Author</th>
     <th>Password</th>
     <th>Delete</th>
   </tr>
@@ -97,6 +105,7 @@
     <td><a href="{{ url_for('user_update', id=users.id) }}"><strong>{{ users.name }}</strong></a> </td>
     <td>{{ users.username }}</td>
     <td>{{ users.email }}</td>
+    <td>{{ users.about_author }}</td>
     <td>{{ users.password_hash }}</td>
     <td><a href="{{ url_for('user_delete', id=users.id) }}"><strong>🗑️</strong></a> </td>
   </tr> 

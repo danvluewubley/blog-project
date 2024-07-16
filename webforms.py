@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, ValidationError, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from wtforms.widgets import TextArea
+from flask_ckeditor import CKEditorField
+
 
 # Create A Search Form
 class SearchForm(FlaskForm):
@@ -19,7 +21,7 @@ class LoginForm(FlaskForm):
 # Create a Posts Form
 class PostForm(FlaskForm):
   title = StringField("Title", validators=[DataRequired()])
-  content = StringField("Content", validators=[DataRequired()], widget=TextArea())
+  content = CKEditorField('Content', validators=[DataRequired()])
   slug = StringField("Slug", validators=[DataRequired()])
   submit = SubmitField("Submit")
 
@@ -29,6 +31,7 @@ class AddUserForm(FlaskForm):
   name = StringField("Name", validators=[DataRequired()])
   username = StringField("Username", validators=[DataRequired()])
   email = StringField("Email", validators=[Email()])
+  about_author = TextAreaField("About Author")
   password_hash = PasswordField("Password", validators=[DataRequired(), EqualTo('password_hash2', message='Passwords Must Match')])
   password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
   submit = SubmitField("Submit")
@@ -39,6 +42,7 @@ class UpdateUserForm(FlaskForm):
   name = StringField("Edit Name", validators=[DataRequired()])
   username = StringField("Username", validators=[DataRequired()])
   email = StringField("Edit Email", validators=[Email()])
+  about_author = TextAreaField("About Author")
   submit = SubmitField("Submit")
 
 

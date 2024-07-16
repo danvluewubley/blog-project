@@ -8,12 +8,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from webforms import LoginForm, PostForm, AddUserForm, UpdateUserForm, PasswordForm, SearchForm
+from flask_ckeditor import CKEditor
 
 load_dotenv()
 
 # Create a Flask Instance
 app = Flask(__name__)
 app.app_context().push()
+
+# Add CKEditor
+ckeditor = CKEditor(app)
 
 # Add Database
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{os.getenv("SQL_PASSWORD")}@localhost/login'
@@ -99,6 +103,7 @@ def dashboard():
     user_to_update.name = request.form['name']
     user_to_update.email = request.form['email']
     user_to_update.username = request.form['username']
+    user_to_update.about_author = request.form['about_author']
     try:
       db.session.commit()
       flash('User Updated Successfully!')
@@ -124,10 +129,14 @@ def dashboard():
 @app.route('/')
 def index():
   return render_template('app.html')
+
+
 # Invalid URL
 @app.errorhandler(404)
 def page_not_found(e):
   return render_template('404.html')
+
+
 # Internal Server Error
 @app.errorhandler(500)
 def page_not_found(e):
@@ -356,6 +365,18 @@ def delete_post(id):
     return render_template('posts.html', posts=posts)
 
 
+# Create Admin Page
+@app.route('/admin')
+@login_required
+def admin():
+  id = current_user.id
+  if id == 8:
+    return render_template('admin.html')
+  else:
+    flash("Sorry you must be an admin to access this page")
+    return redirect(url_for('dashboard'))
+
+
 # Create a Blog Post model
 class Posts(db.Model):
   id = db.Column(db.Integer, primary_key=True)
@@ -373,6 +394,7 @@ class Users(db.Model, UserMixin):
   username = db.Column(db.String(20), nullable=False, unique=True)
   name = db.Column(db.String(100), nullable=False)
   email = db.Column(db.String(200), nullable=False, unique=True)
+  about_author = db.Column(db.Text, nullable=True)
   date_added = db.Column(db.DateTime, default=datetime.utcnow)
   
   # Password Hashing

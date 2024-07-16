@@ -20,16 +20,26 @@
     <div class="card-header">
       {{ current_user.name }}
     </div>
-    <div class="card-body">
-      <h5 class="card-title">Welcome To Your User Dashboard...</h5>
-      <strong>Name:</strong> {{ current_user.name }}<br/>
-      <strong>Username:</strong> {{ current_user.username }} <br/>
-      <strong>User ID:</strong> {{ current_user.id }} <br/>
-      <strong>Email:</strong> {{ current_user.email }} <br/>
-      <strong>Date Joined:</strong> {{ current_user.date_added }} <br/><br/>
-      <a href="{{ url_for('logout')}}" class="btn btn-secondary btn-sm">Log Out</a>
-      <a href="{{ url_for('user_update', id=current_user.id)}}" class="btn btn-secondary btn-sm">Edit User</a>
-      <a href="{{ url_for('user_delete', id=current_user.id) }}" class="btn btn-danger btn-sm">🗑️</a>
+    <div class="card-body">      
+      <div class="container">
+        <div class="row">
+          <div class="col-8">
+            <strong>Name:</strong> {{ current_user.name }}<br/>
+            <strong>Username:</strong> {{ current_user.username }} <br/>
+            <strong>User ID:</strong> {{ current_user.id }} <br/>
+            <strong>Email:</strong> {{ current_user.email }} <br/>
+            <strong>About Author:</strong> {{ current_user.about_author }} <br/>
+            <strong>Date Joined:</strong> {{ current_user.date_added }} <br/><br/>
+            <a href="{{ url_for('logout')}}" class="btn btn-secondary btn-sm">Log Out</a>
+            <a href="{{ url_for('user_update', id=current_user.id)}}" class="btn btn-secondary btn-sm">Edit User</a>
+            <a href="{{ url_for('user_delete', id=current_user.id) }}" class="btn btn-danger btn-sm">🗑️</a>
+            <br/><br/>
+          </div>
+          <div class="col-4">
+            <img src="{{ url_for('static', filename='images/default-pfp.jpg') }}" width="200" align="right">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -56,6 +66,11 @@
         {{ form.username.label(class="form-label") }}
         {{ form.username(class="form-control", value=user_to_update.username) }}
         
+        <br/>
+
+        {{ form.about_author.label(class="form-label") }}
+        <textarea name="about_author" class="form-control">{{ user_to_update.about_author }}</textarea>
+
         <br/>
     
         {{ form.submit(class="btn btn-success btn-sm") }}
