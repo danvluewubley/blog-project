@@ -13,62 +13,49 @@
 
 {% endfor %}
 
-{% if users %}
-  <h1>Update User!</h1>
-  <br/><br/><br/>
-  <table class="table table-hover table-bordered table-striped">
+{% if id == current_user.id %}
 
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Delete</th>
-    </tr>
-  
-    {% for users in our_users %}
-    
-    <tr>
-      <td>{{ users.id }}</td>
-      <td><a href="{{ url_for('user_date', id=our_users.id) }}"><strong>{{ users.name }}</strong></a> </td>
-      <td>{{ users.username }}</td>
-      <td>{{ users.email }}</td>
-      <td><a href="{{ url_for('user_date', id=our_users.id) }}">🗑️</a></td>
-    </tr>
-  
-    {% endfor %}
-  
-  </table>
-{% else %}
   <h1>Update User...</h1>
-  <br/>
-<div class="shadow p-3 mb-5 bg-white rounded">
-  <form action="/user/update/{{ user_to_update.id }}" method="POST">
-    {{ form.hidden_tag() }}
+  <br/><br/>
+  <div class="shadow p-3 mb-5 bg-white rounded">
+    <form action="/user/update/{{ user_to_update.id }}" method="POST">
+      {{ form.hidden_tag() }}
 
-    {{ form.name.label(class="form-label") }}
-    {{ form.name(class="form-control", value=user_to_update.name) }}
-    
-    <br/>
+      {{ form.name.label(class="form-label") }}
+      {{ form.name(class="form-control", value=user_to_update.name) }}
+      
+      <br/>
 
-    {{ form.email.label(class="form-label") }}
-    {{ form.email(class="form-control", value=user_to_update.email) }}
-    
-    <br/>
+      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control", value=user_to_update.email) }}
+      
+      <br/>
 
-    {{ form.username.label(class="form-label") }}
-    {{ form.username(class="form-control", value=user_to_update.username) }}
-    
-    <br/>
+      {{ form.username.label(class="form-label") }}
+      {{ form.username(class="form-control", value=user_to_update.username) }}
+      
+      <br/>
 
-    {{ form.submit(class="btn btn-success") }}
+      {{ form.submit(class="btn btn-success") }}
 
-    <a href="{{ url_for('user_delete', id=id) }}", class="btn btn-danger">🗑️</a>
+      <a href="{{ url_for('user_delete', id=id) }}", class="btn btn-danger">🗑️</a>
 
 
-  </form>
+    </form>
+  </div>
+  <br/><br/><br/>
+
+{% else %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  Sorry! You Can't Edit This User...
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
-<br/><br/><br/>
+
+<h2>Access Denied!</h2>
+<p>Sorry, you cannot access this user profile...</p>
 
 {% endif %}
 

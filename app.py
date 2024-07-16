@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from webforms import LoginForm, PostForm, AddUserForm, UpdateUserForm, PasswordForm
+from webforms import LoginForm, PostForm, AddUserForm, UpdateUserForm, PasswordForm, SearchForm
 
 load_dotenv()
 
@@ -53,6 +53,30 @@ def login():
       flash("That User Doesn't Exist - Try Again!")
 
   return render_template('login.html', form=form)
+
+
+# Pass Form To Navbar
+@app.context_processor
+def base():
+  form = SearchForm()
+  return dict(form=form)
+
+# Create Search Function
+@app.route('/search', methods=['POST'])
+def search():
+  form = SearchForm()
+  posts = Posts.query
+  if form.validate_on_submit():
+    # Get data from submitted form
+    post.searched = form.searched.data
+    # Query the Database
+    posts = posts.filter(Posts.content.like('%' + post.searched + '%'))
+    posts = posts.order_by(Posts.title).all()
+
+    return render_template('search.html', 
+      form=form, 
+      searched=post.searched,
+      posts = posts)
 
 
 # Create Logout Function
@@ -149,6 +173,7 @@ def add_user():
 
 # Update Database Record
 @app.route('/user/update/<int:id>',methods=['GET','POST'])
+@login_required
 def user_update(id):
   form = UpdateUserForm()
   user_to_update = Users.query.get_or_404(id)
@@ -254,14 +279,14 @@ def add_post():
   form = PostForm()
 
   if form.validate_on_submit():
+    poster = current_user.id
     post = Posts(title=form.title.data, 
       content=form.content.data,
-      author=form.author.data,
+      poster_id=poster,
       slug=form.slug.data)
     # Clear the Form
     form.title.data = ''
     form.content.data = ''
-    form.author.data = ''
     form.slug.data = ''
 
     # Add post data to database
@@ -284,7 +309,6 @@ def edit_post(id):
 
   if form.validate_on_submit():
     post.title = form.title.data
-    post.author = form.author.data
     post.slug = form.slug.data
     post.content = form.content.data
 
@@ -295,11 +319,15 @@ def edit_post(id):
 
     return redirect(url_for('post', id=post.id))
   
-  form.title.data = post.title
-  form.author.data = post.author
-  form.slug.data = post.slug
-  form.content.data = post.content
-  return render_template('edit_post.html', form=form)
+  if current_user.id == post.poster_id:
+    form.title.data = post.title
+    form.slug.data = post.slug
+    form.content.data = post.content
+    return render_template('edit_post.html', form=form)
+  else:
+    flash("You Aren't Authorized To Edit That Post!")
+    posts=Posts.query.order_by(Posts.date_posted)
+    return render_template('posts.html', posts=posts)
 
 
 # Delete Blog Page
@@ -307,38 +335,39 @@ def edit_post(id):
 @login_required
 def delete_post(id):
   post_to_delete = Posts.query.get_or_404(id)
-  title = None
-  form = PostForm()
+  id = current_user.id
+  if id == post_to_delete.poster.id:
+    try:
+      db.session.delete(post_to_delete)
+      db.session.commit()
+      
+      flash("User Deleted Successfully!")
+      
+      posts=Posts.query.order_by(Posts.date_posted)
+      return render_template('posts.html', posts=posts)
 
-  try:
-    db.session.delete(post_to_delete)
-    db.session.commit()
-    flash("User Deleted Successfully!")
-    our_posts=Posts.query.order_by(Posts.date_posted)
-    return render_template('posts.html',
-      title = title,
-      form = form,
-      our_posts=our_posts)
+    except:
+      flash("Whoops! There was a problem deleting blog, try again...")
+      posts=Posts.query.order_by(Posts.date_posted)
+      return render_template('posts.html', posts=posts)
+  else:
+    flash("You Aren't Authorized To Delete That Post!")
+    posts=Posts.query.order_by(Posts.date_posted)
+    return render_template('posts.html', posts=posts)
 
-  except:
-    flash("Whoops! There was a problem deleting blog, try again...")
-    return render_template('posts.html',
-      title = title,
-      form = form,
-      our_posts=our_posts)
-  
 
 # Create a Blog Post model
 class Posts(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   title = db.Column(db.String(255))
   content = db.Column(db.Text)
-  author = db.Column(db.String(255))
   date_posted = db.Column(db.DateTime, default=datetime.utcnow)
   slug = db.Column(db.String(255))
+  # Foreign Key to Link Users (refer to primary key of the user)
+  poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
-# Create User Model
+#t Create User Model
 class Users(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(20), nullable=False, unique=True)
@@ -348,6 +377,9 @@ class Users(db.Model, UserMixin):
   
   # Password Hashing
   password_hash = db.Column(db.String(128))
+
+  # User Can Have Many Posts
+  posts = db.relationship('Posts', backref='poster')
 
   @property
   def password(self):

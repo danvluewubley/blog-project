@@ -3,19 +3,26 @@ from wtforms import StringField, SubmitField, PasswordField, BooleanField, Valid
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from wtforms.widgets import TextArea
 
+# Create A Search Form
+class SearchForm(FlaskForm):
+  searched = StringField("Searched", validators=[DataRequired()])
+  submit = SubmitField("Submit")
+
+
 # Create Login Form
 class LoginForm(FlaskForm):
   username = StringField("Username", validators=[DataRequired()])
   password = PasswordField("Password", validators=[DataRequired()])
   submit = SubmitField("Submit")
 
+
 # Create a Posts Form
 class PostForm(FlaskForm):
   title = StringField("Title", validators=[DataRequired()])
   content = StringField("Content", validators=[DataRequired()], widget=TextArea())
-  author = StringField("Author", validators=[DataRequired()])
   slug = StringField("Slug", validators=[DataRequired()])
   submit = SubmitField("Submit")
+
 
 # Create a User Form Class
 class AddUserForm(FlaskForm):
@@ -26,12 +33,14 @@ class AddUserForm(FlaskForm):
   password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
   submit = SubmitField("Submit")
 
+
 # Create an User Update Form
 class UpdateUserForm(FlaskForm):
   name = StringField("Edit Name", validators=[DataRequired()])
   username = StringField("Username", validators=[DataRequired()])
   email = StringField("Edit Email", validators=[Email()])
   submit = SubmitField("Submit")
+
 
 # Create a Password Form Class
 class PasswordForm(FlaskForm):

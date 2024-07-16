@@ -20,12 +20,18 @@
 
 <div class="shadow p-3 mb-5 bg-white rounded">
   <h2>{{ post.title }}</h2>
-  <small>By: {{ post.author }}</small><br/>
+  <small>By: {{ post.poster.name }}</small><br/>
   <small>{{ post.date_posted }}</small><br/><br/>
   {{ post.content }}<br/><br/>
   <a href="{{ url_for('post', id=post.id) }}" class="btn btn-outline-secondary btn-sm">View Blog</a>
-  <a href="{{ url_for('edit_post', id=post.id) }}" class="btn btn-outline-secondary btn-sm">Edit Blog</a>
-  <a href="{{ url_for('delete_post', id=post.id) }}" class="btn btn-outline-secondary btn-sm">🗑️</a>
+  
+  {% if post.poster_id == current_user.id %}
+  
+    <a href="{{ url_for('edit_post', id=post.id) }}" class="btn btn-outline-secondary btn-sm">Edit Blog</a>
+    <a href="{{ url_for('delete_post', id=post.id) }}" class="btn btn-danger btn-sm">🗑️</a>
+  
+  {% endif %}
+  
 </div>
 
 {% endfor %}
