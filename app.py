@@ -9,6 +9,8 @@ from datetime import date
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from webforms import LoginForm, PostForm, AddUserForm, UpdateUserForm, PasswordForm, SearchForm
 from flask_ckeditor import CKEditor
+from werkzeug.utils import secure_filename
+import uuid as uuid
 
 load_dotenv()
 
@@ -21,6 +23,9 @@ ckeditor = CKEditor(app)
 
 # Add Database
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{os.getenv("SQL_PASSWORD")}@localhost/login'
+
+UPLOAD_FOLDER = 'static/images/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Secret Key!
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -104,6 +109,19 @@ def dashboard():
     user_to_update.email = request.form['email']
     user_to_update.username = request.form['username']
     user_to_update.about_author = request.form['about_author']
+    user_to_update.profile_pic = request.files['profile_pic']
+    
+    # Grab Image Name
+    pic_filename = secure_filename(user_to_update.profile_pic.filename)
+    # Set UUID
+    pic_name = str(uuid.uuid1()) + "_" + pic_filename
+    # Save That Image
+    saver = request.files['profile_pic']
+    saver.save(os.path.join(app.config['UPLOAD_FOLDER'],  pic_name))
+    
+    # Change it to a string to save to db
+    user_to_update.profile_pic = pic_name
+    
     try:
       db.session.commit()
       flash('User Updated Successfully!')
@@ -396,7 +414,7 @@ class Users(db.Model, UserMixin):
   email = db.Column(db.String(200), nullable=False, unique=True)
   about_author = db.Column(db.Text, nullable=True)
   date_added = db.Column(db.DateTime, default=datetime.utcnow)
-  
+  profile_pic = db.Column(db.String(100), nullable=True)
   # Password Hashing
   password_hash = db.Column(db.String(128))
 
