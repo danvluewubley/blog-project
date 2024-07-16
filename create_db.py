@@ -7,7 +7,7 @@ load_dotenv()
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Family6104$"
+  passwd=os.getenv("SQL_PASSWORD")
 )
 
 my_cursor=mydb.cursor()
