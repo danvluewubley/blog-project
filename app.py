@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 import uuid as uuid
 
 load_dotenv()
+password = os.environ.get("SQL_PASSWORD")
 
 # Create a Flask Instance
 app = Flask(__name__)
@@ -22,7 +23,7 @@ app.app_context().push()
 ckeditor = CKEditor(app)
 
 # Add Database
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{os.getenv("SQL_PASSWORD")}@localhost/login'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:' + password + '@localhost/login'
 
 UPLOAD_FOLDER = 'static/images/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
