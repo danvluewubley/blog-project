@@ -16,7 +16,8 @@ load_dotenv()
 password = os.environ.get("SQL_PASSWORD")
 
 # Create a Flask Instance
-app = Flask(__name__)
+appplication = Flask(__name__)
+app = appplication
 app.app_context().push()
 
 # Add CKEditor
