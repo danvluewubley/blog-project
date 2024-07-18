@@ -111,31 +111,40 @@ def dashboard():
     user_to_update.email = request.form['email']
     user_to_update.username = request.form['username']
     user_to_update.about_author = request.form['about_author']
-    user_to_update.profile_pic = request.files['profile_pic']
     
-    # Grab Image Name
-    pic_filename = secure_filename(user_to_update.profile_pic.filename)
-    # Set UUID
-    pic_name = str(uuid.uuid1()) + "_" + pic_filename
-    # Save That Image
-    saver = request.files['profile_pic']
-    saver.save(os.path.join(app.config['UPLOAD_FOLDER'],  pic_name))
-    
-    # Change it to a string to save to db
-    user_to_update.profile_pic = pic_name
-    
-    try:
+    # Check for profile pic
+    if request.files['profile_pic']:
+      user_to_update.profile_pic = request.files['profile_pic']
+
+      # Grab Image Name
+      pic_filename = secure_filename(user_to_update.profile_pic.filename)
+      # Set UUID
+      pic_name = str(uuid.uuid1()) + "_" + pic_filename
+      # Save That Image
+      saver = request.files['profile_pic']
+      saver.save(os.path.join(app.config['UPLOAD_FOLDER'],  pic_name))
+      
+      # Change it to a string to save to db
+      user_to_update.profile_pic = pic_name
+      
+      try:
+        db.session.commit()
+        flash('User Updated Successfully!')
+        return render_template("dashboard.html",
+          form=form,
+          user_to_update=user_to_update)
+      except:
+        flash('Error! Looks like there was a problem... Try Again!')
+        return render_template("dashboard.html",
+          form=form,
+          user_to_update=user_to_update,
+          id=id)
+    else:
       db.session.commit()
-      flash('User Updated Successfully!')
-      return render_template("dashboard.html",
-        form=form,
-        user_to_update=user_to_update)
-    except:
       flash('Error! Looks like there was a problem... Try Again!')
       return render_template("dashboard.html",
         form=form,
-        user_to_update=user_to_update,
-        id=id)
+        user_to_update=user_to_update)
   else:
     return render_template("dashboard.html",
         form=form,
@@ -231,27 +240,32 @@ def user_update(id):
 
 # Delete Database Record
 @app.route('/user/delete/<int:id>')
+@login_required
 def user_delete(id):
-  user_to_delete = Users.query.get_or_404(id)
-  name = None
-  form = AddUserForm()
+  if id == current_user.id:
+    user_to_delete = Users.query.get_or_404(id)
+    name = None
+    form = AddUserForm()
 
-  try:
-    db.session.delete(user_to_delete)
-    db.session.commit()
-    flash("User Deleted Successfully!")
-    our_users=Users.query.order_by(Users.date_added)
-    return render_template('user.html',
-      name = name,
-      form = form,
-      our_users=our_users)
+    try:
+      db.session.delete(user_to_delete)
+      db.session.commit()
+      flash("User Deleted Successfully!")
+      our_users=Users.query.order_by(Users.date_added)
+      return render_template('user.html',
+        name = name,
+        form = form,
+        our_users=our_users)
 
-  except:
-    flash("Whoops! There was a problem deleting user, try again...")
-    return render_template('user.html',
-      name = name,
-      form = form,
-      our_users=our_users)
+    except:
+      flash("Whoops! There was a problem deleting user, try again...")
+      return render_template('user.html',
+        name = name,
+        form = form,
+        our_users=our_users)
+  else:
+    flash("Sorry, you can't delete that user!")
+    return redirect(url_for('dashboard'))
   
 
 # Create Password Test Page
@@ -348,7 +362,7 @@ def edit_post(id):
 
     return redirect(url_for('post', id=post.id))
   
-  if current_user.id == post.poster_id:
+  if current_user.id == post.poster_id or current_user.id == 8:
     form.title.data = post.title
     form.slug.data = post.slug
     form.content.data = post.content
@@ -365,7 +379,7 @@ def edit_post(id):
 def delete_post(id):
   post_to_delete = Posts.query.get_or_404(id)
   id = current_user.id
-  if id == post_to_delete.poster.id:
+  if id == post_to_delete.poster.id or id == 8:
     try:
       db.session.delete(post_to_delete)
       db.session.commit()

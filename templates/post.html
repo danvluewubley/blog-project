@@ -21,11 +21,37 @@
   <small>{{ post.date_posted }}</small><br/><br/>
   {{ post.content|safe }}<br/><br/>
   
-  {% if post.poster.about_author %}
+<div class="card mb-3">
+  <div class="row no-gutter">
+    <div class="col-md-2">
+      {% if post.poster.profile_pic %}
+        <img src="{{ url_for('static', filename='images/'+post.poster.profile_pic) }}" width="150" align="left">
+      {% else %}
+        <img src="{{ url_for('static', filename='images/default-pfp.jpg') }}" width="150" align="left">
+      {% endif %}
+    </div>
+    <div class="col-md-10">
+      <div class="card-body">
+        <h5 class="card-title">
+          {{ post.poster.name }}
+        </h5>
+        <p class="card-text">
+          {% if post.poster.about_author %}
   
-    {{ post.poster.about_author }}
+            {{ post.poster.about_author }}
 
-  {% endif %}
+          {% else %}
+
+            Author has no about profile yet...
+
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
 </div>
 
 <a href="{{ url_for('posts', id=post.id) }}" class="btn btn-outline-secondary btn-sm">Back To Blog</a>
