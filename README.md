@@ -27,7 +27,7 @@ cd blog-app
 ```
 python -m venv venv
 ```
-5. Activate the virtual environment:
+4. Activate the virtual environment:
 * On Windows:
 ```
 venv\Scripts\activate.bat
