@@ -24,9 +24,7 @@ app.app_context().push()
 ckeditor = CKEditor(app)
 
 # Add Database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:' + password + '@localhost/login'
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://blog_app_p3pj_user:1Pw1MdQfAyP482L7ghWoJjoQHbpqmLdV@dpg-cqg0av5ds78s73c712qg-a/blog_app_p3pj'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:' + password + '@localhost/login'
 
 UPLOAD_FOLDER = 'static/images/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
